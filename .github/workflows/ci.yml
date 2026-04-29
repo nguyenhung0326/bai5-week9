@@ -26,8 +26,16 @@ jobs:
           cache: maven
 
       - name: Run tests
-        run: mvn test -Dcheckstyle.skip=true
+        run: mvn verify "-Dcheckstyle.skip=true"
         shell: bash
+
+      - name: Upload JaCoCo Coverage Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-coverage-report-${{ matrix.os }}
+          path: target/site/jacoco/
+          retention-days: 7
       - name: Package (build .jar)
         run: mvn package -DskipTests -Dcheckstyle.skip=true
         shell :  bash

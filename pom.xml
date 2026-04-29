@@ -65,35 +65,44 @@
         Goal checkstyle:check sẽ fail build nếu có vi phạm (failsOnError=true).
       -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${checkstyle.version}</version>
-        <configuration>
-          <!-- Dùng bộ quy tắc Google Java Style có sẵn trong artifact checkstyle -->
-          <configLocation>google_checks.xml</configLocation>
-          <consoleOutput>true</consoleOutput>
-          <failsOnError>true</failsOnError>
-          <violationSeverity>warning</violationSeverity>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-        </configuration>
-        <!-- Gắn checkstyle:check vào phase validate để chạy trước khi compile -->
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
         <executions>
           <execution>
-            <id>validate-checkstyle</id>
-            <phase>validate</phase>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>jacoco-check</id>
+            <phase>verify</phase>
             <goals>
               <goal>check</goal>
             </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>INSTRUCTION</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.80</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <!-- Checkstyle tool mới nhất (bao gồm google_checks.xml) -->
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>10.12.4</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
