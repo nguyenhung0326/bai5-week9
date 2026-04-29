@@ -1,6 +1,5 @@
 name: Java CI with Maven
 
-# Trigger khi push hoặc pull_request lên main/master
 on:
   push:
     branches: [ "main", "master" ]
@@ -12,29 +11,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout source code
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. Cài Java 11 (khớp với pom.xml)
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
 
-      # 3. Chạy test (phase test tự động bao gồm compile + validate)
       - name: Run tests
         run: mvn test
 
-      # 4. Package để tạo file .jar
       - name: Package (build .jar)
         run: mvn package -DskipTests
 
-      # 5. Upload .jar artifact để lưu giữ và xác minh
       - name: Upload JAR artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: bank-system-jar
           path: target/*.jar
