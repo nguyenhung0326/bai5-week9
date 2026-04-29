@@ -33,7 +33,11 @@ public class SavingsAccount extends Account {
     super(accountNumber, balance);
   }
 
-  /**
+    public SavingsAccount() {
+        super();
+    }
+
+    /**
    * Nạp tiền vào tài khoản tiết kiệm.
    *
    * <p>Ghi log INFO khi thành công, WARN khi thất bại.</p>

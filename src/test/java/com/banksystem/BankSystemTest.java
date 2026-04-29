@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 
@@ -125,4 +127,22 @@ class BankSystemTest {
     Assertions.assertTrue(path.contains("transactions.txt"));
     Assertions.assertTrue(path2.toString().contains("transactions.txt"));
   }
+  @Test
+  public void testBankConstructorAndGetCustomerList() {
+    // Hành động này sẽ gọi Constructor (dòng 30-31)
+    // và tự động kích hoạt khởi tạo logger (dòng 23)
+    Bank bank = new Bank();
+
+    // Kiểm tra xem danh sách khách hàng được trả về có khác null và rỗng hay không
+    // Hành động này sẽ gọi hàm getCustomerList() (dòng 39-40)
+    assertNotNull(bank.getCustomerList());
+    assertTrue(bank.getCustomerList().isEmpty());
+  }
+  @Test
+  public void testBankConstructor() {
+    Bank bank = new Bank();
+    assertNotNull(bank.getCustomerList(), "Danh sách khách hàng không được null khi khởi tạo");
+    assertTrue(bank.getCustomerList().isEmpty(), "Danh sách khách hàng ban đầu phải rỗng");
+  }
+
 }

@@ -38,6 +38,10 @@ public abstract class Account {
     this.transactionList = new ArrayList<>();
   }
 
+  public Account() {
+
+  }
+
   /**
    * Trả về số tài khoản.
    *
