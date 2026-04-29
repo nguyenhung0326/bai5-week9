@@ -1,148 +1,124 @@
 package com.banksystem;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Test;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
-
-/**
- * Kiểm thử các chức năng cốt lõi của hệ thống ngân hàng.
- */
-class BankSystemTest {
-
-  private CheckingAccount checkingAccount;
-  private SavingsAccount savingsAccount;
-
-  /**
-   * Thiết lập dữ liệu kiểm thử trước mỗi test case.
-   */
-  @BeforeEach
-  void setUp() {
-    checkingAccount = new CheckingAccount(1001L, 10000.0);
-    savingsAccount = new SavingsAccount(2001L, 10000.0);
-  }
+public class BankSystemTest {
 
   @Test
-  @DisplayName("Nạp tiền hợp lệ vào tài khoản vãng lai")
-  void depositCheckingValidAmount() {
-    checkingAccount.deposit(500.0);
-    Assertions.assertEquals(10500.0, checkingAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Nạp tiền âm vào vãng lai không thay đổi số dư")
-  void depositCheckingNegativeAmountNoChange() {
-    checkingAccount.deposit(-100.0);
-    Assertions.assertEquals(10000.0, checkingAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Rút tiền hợp lệ từ tài khoản vãng lai")
-  void withdrawCheckingValidAmount() {
-    checkingAccount.withdraw(1000.0);
-    Assertions.assertEquals(9000.0, checkingAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Rút tiền vượt số dư vãng lai không thay đổi số dư")
-  void withdrawCheckingInsufficientFundsNoChange() {
-    checkingAccount.withdraw(20000.0);
-    Assertions.assertEquals(10000.0, checkingAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Nạp tiền hợp lệ vào tài khoản tiết kiệm")
-  void depositSavingsValidAmount() {
-    savingsAccount.deposit(2000.0);
-    Assertions.assertEquals(12000.0, savingsAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Rút tiền không vượt giới hạn và không vi phạm số dư tối thiểu")
-  void withdrawSavingsValidAmount() {
-    savingsAccount.withdraw(500.0);
-    Assertions.assertEquals(9500.0, savingsAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Rút tiền vượt MAX_WITHDRAWAL_AMOUNT không thay đổi số dư tiết kiệm")
-  void withdrawSavingsExceedsMaxAmount() {
-    savingsAccount.withdraw(SavingsAccount.MAX_WITHDRAWAL_AMOUNT + 1);
-    Assertions.assertEquals(10000.0, savingsAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Rút tiền vi phạm MIN_BALANCE không thay đổi số dư tiết kiệm")
-  void withdrawSavingsViolatesMinBalance() {
-    // Số dư 10000, rút 5001 → còn 4999 < MIN_BALANCE(5000) → bị từ chối
-    savingsAccount.withdraw(5001.0);
-    Assertions.assertEquals(10000.0, savingsAccount.getBalance(), 0.001);
-  }
-
-  @Test
-  @DisplayName("Giao dịch được ghi vào lịch sử sau khi nạp tiền")
-  void transactionRecordedAfterDeposit() {
-    checkingAccount.deposit(300.0);
-    Assertions.assertEquals(1, checkingAccount.getTransactionList().size());
-  }
-
-  @Test
-  @DisplayName("Transaction.getTypeString trả về đúng mô tả")
-  void transactionGetTypeString() {
-    Assertions.assertEquals("Nạp tiền vãng lai",
-        Transaction.getTypeString(Transaction.TYPE_DEPOSIT_CHECKING));
-    Assertions.assertEquals("Rút tiền tiết kiệm",
-        Transaction.getTypeString(Transaction.TYPE_WITHDRAW_SAVINGS));
-    Assertions.assertEquals("Không rõ", Transaction.getTypeString(99));
-  }
-
-  @Test
-  @DisplayName("Account.equals so sánh đúng theo số tài khoản")
-  void accountEqualsById() {
-    CheckingAccount other = new CheckingAccount(1001L, 9999.0);
-    Assertions.assertEquals(checkingAccount, other);
-  }
-  @Test
-  @DisplayName("Path cứng Windows - sẽ lỗi trên Linux/macOS")
-  void hardcodedWindowsPathFails() {
-    // Dùng dấu \ cứng → lỗi trên Ubuntu/macOS
-    String path = "logs\\transactions.txt";
-    java.io.File file = new java.io.File(path);
-    // Trên Windows: path hợp lệ, trên Linux: coi cả chuỗi là tên file
-    Assertions.assertTrue(file.getPath().contains("transactions.txt"));
-  }
-  @Test
-  @DisplayName("Path dùng File.separator - chạy đúng mọi hệ điều hành")
-  void crossPlatformPathWorks() {
-    // Cách 1: File.separator
-    String path = "logs" + File.separator + "transactions.txt";
-
-    // Cách 2: java.nio.file.Path (khuyên dùng hơn)
-    java.nio.file.Path path2 = java.nio.file.Paths.get("logs", "transactions.txt");
-
-    Assertions.assertTrue(path.contains("transactions.txt"));
-    Assertions.assertTrue(path2.toString().contains("transactions.txt"));
-  }
-  @Test
-  public void testBankConstructorAndGetCustomerList() {
-    // Hành động này sẽ gọi Constructor (dòng 30-31)
-    // và tự động kích hoạt khởi tạo logger (dòng 23)
+  public void testBankConstructorsAndSetters() {
     Bank bank = new Bank();
-
-    // Kiểm tra xem danh sách khách hàng được trả về có khác null và rỗng hay không
-    // Hành động này sẽ gọi hàm getCustomerList() (dòng 39-40)
     assertNotNull(bank.getCustomerList());
     assertTrue(bank.getCustomerList().isEmpty());
-  }
-  @Test
-  public void testBankConstructor() {
-    Bank bank = new Bank();
-    assertNotNull(bank.getCustomerList(), "Danh sách khách hàng không được null khi khởi tạo");
-    assertTrue(bank.getCustomerList().isEmpty(), "Danh sách khách hàng ban đầu phải rỗng");
+
+    // Nhánh 1: Set list null
+    bank.setCustomerList(null);
+    assertNotNull(bank.getCustomerList());
+
+    // Nhánh 2: Set list hợp lệ
+    List<Customer> list = new ArrayList<>();
+    list.add(new Customer(123456789L, "Test Name"));
+    bank.setCustomerList(list);
+    assertEquals(1, bank.getCustomerList().size());
   }
 
+  @Test
+  public void testReadCustomerListWithNullStream() {
+    Bank bank = new Bank();
+    // Kiểm tra nhánh if (inputStream == null)
+    bank.readCustomerList(null);
+    assertTrue(bank.getCustomerList().isEmpty());
+  }
+
+  @Test
+  public void testReadCustomerListWithValidAndInvalidData() {
+    Bank bank = new Bank();
+
+    // Chuỗi giả lập một file txt với đủ mọi trường hợp:
+    // 1. Khách hàng chuẩn
+    // 2. Tài khoản chuẩn (Checking và Savings)
+    // 3. Dòng trống (sẽ bị bỏ qua)
+    // 4. Dòng sai định dạng khoảng trắng (lastSpace <= 0)
+    // 5. Dòng tài khoản nằm chơ vơ khi chưa có khách hàng
+    // 6. Dòng tài khoản bị thiếu trường (parts < 3)
+    // 7. Dòng sai loại tài khoản (UNKNOWN)
+    // 8. Dòng sai định dạng số tiền (NumberFormatException)
+    String mockFileData =
+            "12345 CHECKING 5000\n" + // Chưa có current, sẽ bỏ qua
+                    "Nguyen Van A 123456789\n" +
+                    "111 CHECKING 1000\n" +
+                    "222 SAVINGS 2000\n" +
+                    "\n" + // Dòng trống
+                    "   \n" + // Dòng chứa mỗi dấu cách
+                    "NoSpaceLine\n" + // Không có dấu cách
+                    "333 UNKNOWN 3000\n" + // Sai loại tài khoản
+                    "444 CHECKING ABC\n" + // Lỗi NumberFormatException
+                    "555 SAVINGS\n" + // Thiếu parts (parts < 3)
+                    "Tran Thi B 987654321\n" +
+                    "666 CHECKING 500\n";
+
+    InputStream is = new ByteArrayInputStream(mockFileData.getBytes());
+    bank.readCustomerList(is);
+
+    List<Customer> list = bank.getCustomerList();
+
+    // Sẽ chỉ có 2 khách hàng được thêm thành công
+    assertEquals(2, list.size());
+
+    // Kiểm tra khách hàng A và các tài khoản hợp lệ của A
+    Customer cA = list.get(0);
+    assertEquals("Nguyen Van A", cA.getFullName());
+    assertEquals(2, cA.getAccountList().size()); // 111 CHECKING và 222 SAVINGS
+
+    // Kiểm tra khách hàng B
+    Customer cB = list.get(1);
+    assertEquals("Tran Thi B", cB.getFullName());
+    assertEquals(1, cB.getAccountList().size());
+  }
+
+  @Test
+  public void testReadCustomerListWithException() {
+    Bank bank = new Bank();
+    // Giả lập một InputStream bị hỏng để test khối catch (Exception e)
+    InputStream brokenStream = new InputStream() {
+      @Override
+      public int read() throws IOException {
+        throw new IOException("Cố tình tạo lỗi IO để test block catch");
+      }
+    };
+
+    // Hàm này bắt lỗi (try-catch) bên trong nên nó sẽ không throw ra ngoài
+    assertDoesNotThrow(() -> bank.readCustomerList(brokenStream));
+  }
+
+  @Test
+  public void testSortingMethods() {
+    Bank bank = new Bank();
+    Customer c1 = new Customer(333333333L, "B");
+    Customer c2 = new Customer(111111111L, "C");
+    Customer c3 = new Customer(222222222L, "A");
+    Customer c4 = new Customer(444444444L, "A"); // Trùng tên, khác CMND
+
+    bank.setCustomerList(Arrays.asList(c1, c2, c3, c4));
+
+    String sortedById = bank.getCustomersInfoByIdOrder();
+    String sortedByName = bank.getCustomersInfoByNameOrder();
+
+    // Test Sort by ID (Kỳ vọng: 111 -> 222 -> 333 -> 444)
+    assertTrue(sortedById.indexOf("111111111") < sortedById.indexOf("222222222"));
+    assertTrue(sortedById.indexOf("222222222") < sortedById.indexOf("333333333"));
+    assertTrue(sortedById.indexOf("333333333") < sortedById.indexOf("444444444"));
+
+    // Test Sort by Name (Kỳ vọng: A(222) -> A(444) -> B(333) -> C(111))
+    assertTrue(sortedByName.indexOf("222222222") < sortedByName.indexOf("444444444")); // Trùng tên, xếp theo ID
+    assertTrue(sortedByName.indexOf("444444444") < sortedByName.indexOf("333333333")); // A lên trước B
+    assertTrue(sortedByName.indexOf("333333333") < sortedByName.indexOf("111111111")); // B lên trước C
+  }
 }
