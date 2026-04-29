@@ -84,7 +84,7 @@ public class CustomerTest {
     @Test
     public void testGetCustomerInfo() {
         Customer customer = new Customer(123456789L, "Nguyen");
-        String expected = "Số CMND: 123456789. Họ tên: Nguyen";
+        String expected = "Số CMND: 123456789. Họ tên: Nguyen.";
         assertEquals(expected, customer.getCustomerInfo());
     }
 }
