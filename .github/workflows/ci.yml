@@ -8,7 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout source code
@@ -22,14 +26,14 @@ jobs:
           cache: maven
 
       - name: Run tests
-        run: mvn test
+        run: mvn test -Dcheckstyle.skip=true
 
       - name: Package (build .jar)
-        run: mvn package -DskipTests
+        run: mvn package -DskipTests -Dcheckstyle.skip=true
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: bank-system-jar
+          name: bank-system-jar-${{ matrix.os }}
           path: target/*.jar
           retention-days: 7

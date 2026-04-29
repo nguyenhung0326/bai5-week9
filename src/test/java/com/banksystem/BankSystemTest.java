@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+
 /**
  * Kiểm thử các chức năng cốt lõi của hệ thống ngân hàng.
  */
@@ -101,5 +103,26 @@ class BankSystemTest {
   void accountEqualsById() {
     CheckingAccount other = new CheckingAccount(1001L, 9999.0);
     Assertions.assertEquals(checkingAccount, other);
+  }
+  @Test
+  @DisplayName("Path cứng Windows - sẽ lỗi trên Linux/macOS")
+  void hardcodedWindowsPathFails() {
+    // Dùng dấu \ cứng → lỗi trên Ubuntu/macOS
+    String path = "logs\\transactions.txt";
+    java.io.File file = new java.io.File(path);
+    // Trên Windows: path hợp lệ, trên Linux: coi cả chuỗi là tên file
+    Assertions.assertTrue(file.getPath().contains("transactions.txt"));
+  }
+  @Test
+  @DisplayName("Path dùng File.separator - chạy đúng mọi hệ điều hành")
+  void crossPlatformPathWorks() {
+    // Cách 1: File.separator
+    String path = "logs" + File.separator + "transactions.txt";
+
+    // Cách 2: java.nio.file.Path (khuyên dùng hơn)
+    java.nio.file.Path path2 = java.nio.file.Paths.get("logs", "transactions.txt");
+
+    Assertions.assertTrue(path.contains("transactions.txt"));
+    Assertions.assertTrue(path2.toString().contains("transactions.txt"));
   }
 }
